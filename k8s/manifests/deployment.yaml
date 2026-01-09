@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ttt-deployment
+  labels:
+    app: ttt
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ttt
+  
+  template:
+    metadata:
+      labels:
+        app: ttt
+    spec:
+      containers:
+      - name: ttt
+        image: mgumaneh2811/ttt_app:latest
+        ports:
+        - containerPort: 80
