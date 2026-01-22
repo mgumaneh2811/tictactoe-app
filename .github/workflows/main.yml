@@ -90,8 +90,30 @@ jobs:
         with:
           context: .
           file: ./Dockerfile
-          push: true
+          push: false
           tags: ${{ secrets.DOCKER_USERNAME }}/ttt_app:${{ github.run_id }}
+   
+    scan_docker_image:
+      needs: create_docker_image
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+        - name: Log in to Docker Hub
+          uses: docker/login-action@v2
+          with:
+            username: ${{ secrets.DOCKER_USERNAME }}
+            password: ${{ secrets.DOCKER_PASSWORD }}
+        - name: Set up Trivy
+          uses: aquasecurity/trivy-action@0.33.1
+          with:
+            image-ref: docker.io/${{ secrets.DOCKER_USERNAME }}/ttt_app:${{ github.run_id }}
+            format: 'table'
+            exit-code: '1'
+            ignore-unfixed: true
+            vuln-type: 'os,library'
+            severity: 'CRITICAL,HIGH'
+         
 
   update_helm_chart:
     needs: create_docker_image
