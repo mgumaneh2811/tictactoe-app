@@ -26,7 +26,6 @@ jobs:
         run: npm run lint
 
   security-scan:
-    needs: lint
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -45,7 +44,6 @@ jobs:
         uses: github/codeql-action/analyze@v4
 
   test :
-    needs: security-scan
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -60,7 +58,7 @@ jobs:
         run: npm test
 
   build:
-    needs: test
+    needs: [lint, security-scan, test]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
